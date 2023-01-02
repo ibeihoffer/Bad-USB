@@ -115,3 +115,83 @@ function RDP-Status {
 $RDP = RDP-Status
 
 ######################################################################################################################################################################
+
+#UAC State:
+#Referenced I-Am-Jakoby
+#Need further understanding
+
+Function Get-RegistryValue($key, $value) {  (Get-ItemProperty $key $value).$value }
+
+$Key = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" 
+$ConsentPromptBehaviorAdmin_Name = "ConsentPromptBehaviorAdmin" 
+$PromptOnSecureDesktop_Name = "PromptOnSecureDesktop" 
+
+$ConsentPromptBehaviorAdmin_Value = Get-RegistryValue $Key $ConsentPromptBehaviorAdmin_Name 
+$PromptOnSecureDesktop_Value = Get-RegistryValue $Key $PromptOnSecureDesktop_Name
+
+If($ConsentPromptBehaviorAdmin_Value -Eq 0 -And $PromptOnSecureDesktop_Value -Eq 0){ $UAC = "Never notIfy" }
+ 
+ElseIf($ConsentPromptBehaviorAdmin_Value -Eq 5 -And $PromptOnSecureDesktop_Value -Eq 0){ $UAC = "NotIfy me only when apps try to make changes to my computer(do not dim my desktop)" } 
+
+ElseIf($ConsentPromptBehaviorAdmin_Value -Eq 5 -And $PromptOnSecureDesktop_Value -Eq 1){ $UAC = "NotIfy me only when apps try to make changes to my computer(default)" }
+ 
+ElseIf($ConsentPromptBehaviorAdmin_Value -Eq 2 -And $PromptOnSecureDesktop_Value -Eq 1){ $UAC = "Always notIfy" }
+ 
+Else{ $UAC = "Unknown" }
+
+######################################################################################################################################################################
+
+#Contents of startup folder
+
+function StartUp {
+
+$StartUp = (Get-ChildItem -Path ([Environment]::GetFolderPath("Startup"))).Name
+
+    if($StartUp -gt $null) {
+
+        return $StartUp
+
+    }else{
+        
+        Write-Host("It appears there is nothing in the startup folder..")
+
+    }
+
+}
+
+$StartUp = StartUp
+
+######################################################################################################################################################################
+
+#Wifi networks nearby or notify wifi interface is down.
+
+function NearbyWifi {
+
+    $NearbyWifi = (netsh wlan show networks mode=Bssid)
+
+        if($NearbyWifi -gt $null) {
+
+            return $NearbyWifi
+
+        }elseif($NearbyWifi -eq ("*powered down and doesn't support*")){
+
+            Write-Host("`nInterface Name: Wi-Fi`nThe wireless local area network interface is powered down and doesn't support the requested operation.")
+
+        }else{
+
+            Write-Host("No nearby wifi networks detected.")
+
+        }
+
+}
+
+$NearbyWifi = NearbyWifi
+
+######################################################################################################################################################################
+
+#History of wifi network profiles and passwords
+#referenced I-Am-Jakoby
+
+$WifiProfiles = (netsh wlan show profiles) | Select-String "\:(.+)$" | %{$name=$_.Matches.Groups[1].Value.Trim(); $_} | %{(netsh wlan show profile name="$name" key=clear)}  | Select-String "Key Content\W+\:(.+)$" | %{$pass=$_.Matches.Groups[1].Value.Trim(); $_} | %{[PSCustomObject]@{ PROFILE_NAME=$name;PASSWORD=$pass }} | Format-Table -AutoSize | Out-String
+
+######################################################################################################################################################################
