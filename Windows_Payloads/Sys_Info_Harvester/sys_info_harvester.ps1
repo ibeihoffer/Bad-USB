@@ -48,9 +48,9 @@ New-Item -Path $env:tmp/$FolderName -ItemType Directory
 
 ######################################################################################################################################################################
 
-# Recon all user directories (needs work /a=parsing? /f=full directory?)
+# Recon all user directories (/a=parsing? /f=full directory?)
 
-#tree $env:USERPROFILE /a /f >> $env:TEMP\$FolderName\FileTree.txt
+tree $env:USERPROFILE /a /f >> $env:TEMP\$FolderName\FileTree.txt
 
 ######################################################################################################################################################################
 
@@ -58,16 +58,60 @@ function Get-fullName {
 
     $fullName = Net User $Env:username | Select-String -Pattern "Full Name";$fullName = ("$fullName").TrimStart("Full Name")
 
-    if($fullName -gt $null) {
+        if($fullName -gt $null) {
 
-    return $fullName
+                 return $fullName
  
- }else{
-    Write-Host("No full name available for...$env:UserName")
+        }else{
+                 Write-Host("No full name available for...$env:UserName")
     } 
 
 }
 
 $fullName = Get-fullName
+
+######################################################################################################################################################################
+
+function Get-Email {
+
+    $Email = (Get-CimInstance CIM_ComputerSystem).PrimaryOwnerName
+
+        if($Email -gt $null) {
+
+            return $Email
+
+        }else{
+
+            Write-Host("No email found for....$env:UserName")
+        }
+            
+}
+
+$Email = Get-Email
+
+######################################################################################################################################################################
+
+#Local user(s) account, name, and security id:
+
+Get-WmiObject -Class Win32_UserAccount | Format-Table Domain, Name, @{N='Account';E={$PSItem.Caption}}, FullName, SID | Out-String
+
+######################################################################################################################################################################
+
+#Local Security Authority Subsystem Service state:
+#lsass takes care of security policy for the OS
+
+######################################################################################################################################################################
+
+function RDP-Status {
+
+    if ((Get-ItemProperty "hklm:\System\CurrentControlSet\Control\Terminal Server").fDenyTSConnections -eq 0) { 
+	    return "RDP is Enabled" 
+    } else {
+	    return "RDP is NOT Enabled" 
+    }
+
+}
+
+$RDP = RDP-Status
 
 ######################################################################################################################################################################
