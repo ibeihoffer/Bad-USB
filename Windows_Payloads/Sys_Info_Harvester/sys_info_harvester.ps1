@@ -163,7 +163,7 @@ $StartUp = StartUp
 
 ######################################################################################################################################################################
 
-#Wifi networks nearby or notify wifi interface is down.
+#networks nearby or notify wifi interface is down.
 
 function NearbyWifi {
 
@@ -250,6 +250,17 @@ function RamCap {
 }
 
 $RamCap = RamCap
+
+#Get Storage Drives
+#referenced I-Am-Jakoby
+#need further understanding
+$driveType = @{
+   2="Removable disk "
+   3="Fixed local disk "
+   4="Network disk "
+   5="Compact disk "}
+   
+$StorageDrives = Get-WmiObject Win32_LogicalDisk | select DeviceID, VolumeName, @{Name="DriveType";Expression={$driveType.item([int]$_.DriveType)}}, FileSystem,VolumeSerialNumber,@{Name="Size_GB";Expression={"{0:N1} GB" -f ($_.Size / 1Gb)}}, @{Name="FreeSpace_GB";Expression={"{0:N1} GB" -f ($_.FreeSpace / 1Gb)}}, @{Name="FreeSpace_percent";Expression={"{0:N1}%" -f ((100 / ($_.Size / $_.FreeSpace)))}} | Format-Table DeviceID, VolumeName,DriveType,FileSystem,VolumeSerialNumber,@{ Name="Size GB"; Expression={$_.Size_GB}; align="right"; }, @{ Name="FreeSpace GB"; Expression={$_.FreeSpace_GB}; align="right"; }, @{ Name="FreeSpace %"; Expression={$_.FreeSpace_percent}; align="right"; } | Out-String
 
 #All drivers
 $Drivers = Get-WmiObject Win32_PnPSignedDriver| where { $_.DeviceName -notlike $null } | select DeviceName, FriendlyName, DriverProviderName, DriverVersion
