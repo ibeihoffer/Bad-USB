@@ -219,6 +219,24 @@ $OSInfo = Get-WmiObject win32_operatingsystem | select Caption, CSName, Version,
 #CPU Info
 Get-WmiObject Win32_Processor | select DeviceID, Name, Caption, Manufacturer, MaxClockSpeed, L2CacheSize, L2CacheSpeed, L3CacheSize, L3CacheSpeed | Format-List
 
+#GPU Info
+function GPU {
+
+$GPU = Get-WmiObject Win32_VideoController | Format-Table Name, VideoProcessor, DriverVersion, CurrentHorizontalResolution, CurrentVerticalResolution
+
+    if ($GPU -ne $null) {
+
+        return $GPU
+
+    }else{
+
+        echo "No GPU detected in system."
+
+    }
+}
+
+$GPU = GPU
+
 #Mobo Info
 Get-WmiObject Win32_BaseBoard | Format-List
 
@@ -233,6 +251,9 @@ function RamCap {
 
 $RamCap = RamCap
 
+#All drivers
+$Drivers = Get-WmiObject Win32_PnPSignedDriver| where { $_.DeviceName -notlike $null } | select DeviceName, FriendlyName, DriverProviderName, DriverVersion
+
 ######################################################################################################################################################################
 
 #Devices / Tasks
@@ -246,3 +267,23 @@ $klist = klist sessions
 
 #Lists scheduled tasks
 $ScheduledTasks = Get-ScheduledTask
+
+######################################################################################################################################################################
+
+#Network Information
+#Network Interfaces
+$NetInt = Get-WmiObject Win32_NetworkAdapterConfiguration | where { $_.MACAddress -notlike $null }  | select Description, IPAddress, DefaultIPGateway, MACAddress | Format-Table Index, Description, IPAddress, DefaultIPGateway, MACAddress 
+
+#All WLAN profile names
+$ALLWLAN = netsh.exe wlan show profiles | Select-String -pattern " : "
+
+######################################################################################################################################################################
+
+#Running Processes
+$RunningProc = Get-WmiObject win32_process | select Handle, ProcessName, ExecutablePath, CommandLine | Sort-Object ProcessName
+
+######################################################################################################################################################################
+
+#System Local Users
+Get-WmiObject -Class Win32_UserAccount | Format-Table Caption, Domain, Name, FullName, SID
+
