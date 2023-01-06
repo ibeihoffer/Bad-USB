@@ -298,3 +298,8 @@ $RunningProc = Get-WmiObject win32_process | select Handle, ProcessName, Executa
 #System Local Users
 Get-WmiObject -Class Win32_UserAccount | Format-Table Caption, Domain, Name, FullName, SID
 
+######################################################################################################################################################################
+
+#Active TCP Connections
+$ActiveTCP = Get-NetTCPConnection | select @{Name="LocalAddress";Expression={$_.LocalAddress + ":" + $_.LocalPort}}, @{Name="RemoteAddress";Expression={$_.RemoteAddress + ":" + $_.RemotePort}}, State, AppliedSetting, OwningProcess | Format-Table -AutoSize
+
