@@ -369,7 +369,7 @@ $MAC
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-**System Information**
+System Information
 
 System Info:
 $SysInfo
@@ -433,7 +433,6 @@ $klist
 Running Processes:
 $RunningProc
 
-**End**
 "@
 
 $output > $env:TEMP\$FolderName/Harvested.txt
