@@ -287,9 +287,6 @@ $ScheduledTasks = Get-ScheduledTask
 #Network Interfaces
 $NetInt = Get-WmiObject Win32_NetworkAdapterConfiguration | where { $_.MACAddress -notlike $null }  | select Description, IPAddress, DefaultIPGateway, MACAddress | Format-Table Index, Description, IPAddress, DefaultIPGateway, MACAddress | Out-String -width 250
 
-#All WLAN profile names
-$ALLWLAN = netsh.exe wlan show profiles | Select-String -pattern " : " | Out-String -width 250
-
 ######################################################################################################################################################################
 
 #Running Processes
@@ -356,9 +353,6 @@ $WifiProfiles
 
 Network Interfaces:
 $NetInt
-
-All WLAN profile names:
-$ALLWLAN
 
 ------------------------------------------------------------------------------------------------------------------------------
 
