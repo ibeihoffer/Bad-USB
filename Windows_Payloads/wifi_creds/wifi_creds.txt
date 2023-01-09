@@ -1,0 +1,3 @@
+REM Checks available APs then grabs system saved wifi networks and passwrds.
+
+REM
