@@ -1,1 +1,1 @@
-REM ducky script to give webhook url and run script (shortened)
+REM ducky script to give webhook url variable and run script (shortened)
