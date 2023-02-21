@@ -26,6 +26,7 @@
 
 $batContent = @"
 echo off
+timeout /t 20
 powershell.exe Stop-Process -Id (Get-Process wallpaper*).Id -Force -ErrorAction SilentlyContinue
 "@
 
