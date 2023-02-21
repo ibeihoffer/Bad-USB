@@ -21,7 +21,7 @@
 #                                                                                                                 |       /   '.........'   \    ||                  #
 #                                                                                                                 |        ''''''     ''''''     ##                  #
 ######################################################################################################################################################################
-
+<#
 #Turn off wallpaper engine
 #Get process information
   $wpProcess = Get-Process -Name wallpaper* -ErrorAction SilentlyContinue
@@ -38,3 +38,5 @@ if ($wpProcess -ne $null) {
 
   Exit
 }
+#>
+Stop-Process -Id (Get-Process wallpaper*).Id -Force -ErrorAction SilentlyContinue
