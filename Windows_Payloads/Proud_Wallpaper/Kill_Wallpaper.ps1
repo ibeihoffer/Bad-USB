@@ -26,19 +26,19 @@
 function wallpaper {
 
   #Get process information
-  $wpProcess = Get-Process -Name wallpaper*
+  $wpProcess = Get-Process -Name wallpaper* -ErrorAction SilentlyContiue
   
-if ($wpProcess -gt $null) {
+if ($wpProcess -ne $null) {
 
   #Assign the process ID to a variable
-  $wpID = $wpProcess.Id
+  #$wpID = $wpProcess.Id
   
   #Stop process
-  Stop-Process -Id $wpID -Force
+  Stop-Process -Id $wpProcess.Id -Force
   
 }else{
 
-  Continue
+  Exit
   
   }
 }
