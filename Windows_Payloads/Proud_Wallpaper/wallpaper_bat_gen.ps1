@@ -25,7 +25,7 @@
 #Creates .bat file that calls to ps online
 
 $batContent = "@echo off
-start powershell.exe -Command "Stop-Process -Id (Get-Process wallpaper*).Id -Force
+start powershell.exe -Command 'Stop-Process -Id (Get-Process wallpaper*).Id -Force'
 "@
 
 cd "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
