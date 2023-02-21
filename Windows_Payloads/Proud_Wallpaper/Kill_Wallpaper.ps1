@@ -23,9 +23,7 @@
 ######################################################################################################################################################################
 
 #Turn off wallpaper engine
-function wallpaper {
-
-  #Get process information
+#Get process information
   $wpProcess = Get-Process -Name wallpaper* -ErrorAction SilentlyContiue
   
 if ($wpProcess -ne $null) {
@@ -39,6 +37,4 @@ if ($wpProcess -ne $null) {
 }else{
 
   Exit
-  
-  }
 }
