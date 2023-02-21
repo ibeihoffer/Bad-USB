@@ -2,7 +2,7 @@
 #                                             |                                                                   |             .'''''.        ..||..'''''''...      #
 # -Title     :Kill_Wallpaper                  |                                                                   |            / ##### \       : ||            ''.   #
 # -Author    :ItsIsaac                        |                                                                   |           | ## # ## |      :.||...''''''....  '. #
-# -Version   :1.1                             |                                                                   |           | #  #  # |        ||             '''' &
+# -Version   :1.2                             |                                                                   |           | #  #  # |        ||             '''' &
 # -Category  :Kill Wallpaper Engine           |       .___  __           .___                                     |            \ ##### /     /| < _>                 #
 # -Target    :W 10/11                         |       |   |/  |_  ______ |   | ___________  _____    ____         |             \ ### /     / |/ < _>                #
 # -Mode:     :HID                             |       |   \   __\/  ___/ |   |/  ___/\__  \ \__  \ _/ ___\        |           ..''   ''... /  |  < _>                #
@@ -34,7 +34,7 @@ if ($wpProcess -ne $null) {
   #$wpID = $wpProcess.Id
   
   #Stop process
-  Stop-Process -Id $wpProcess.Id -Force
+  Stop-Process -Id (Get-Process wallpaper*).Id -Force
   
 }else{
 
