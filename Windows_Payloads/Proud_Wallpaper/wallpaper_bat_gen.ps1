@@ -26,7 +26,7 @@
 
 $batContent = @"
 echo off
-Stop-Process -Id (Get-Process wallpaper*).Id -Force -ErrorAction SilentlyContinue
+powershell.exe Stop-Process -Id (Get-Process wallpaper*).Id -Force -ErrorAction SilentlyContinue
 "@
 
 cd "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
